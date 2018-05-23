@@ -1,129 +1,127 @@
-var Menu = new Kiwi.State('Menu');
+const {
+  Game,
+  State,
+  GameObjects,
+  Input,
+  Components,
+  Group,
+  HUD,
+} = Kiwi
+const game = new Game()
+const state = new State('lvl1')
 
-Menu.create = function () {
+const spaceshipSpeed = 4
+let score = 0
 
-  this.menuWidth = 100;
+const getScore = () => `Score : ${score}`
 
-  this.myButton1 = new Kiwi.HUD.Widget.MenuItem(this.game, 'Level 1', -this.menuWidth, 0);
-  this.myButton1.style.color = 'white';
-  this.myButton1.style.display = 'block';
-  this.myButton1.style.boxSizing = 'border-box';
-  this.myButton1.style.width = (this.menuWidth * 2).toString() + 'px';
-  this.myButton1.style.textAlign = 'center';
-  this.myButton1.style.cursor = 'pointer';
-  this.myButton1.style.padding = '0.5em 1em';
-  this.myButton1.style.backgroundColor = '#9c0';
-
-
-  this.myButton3 = new Kiwi.HUD.Widget.MenuItem(this.game, 'Center', -this.menuWidth, 50);
-  this.myButton3.style.color = 'white';
-  this.myButton3.style.display = 'none';
-  this.myButton3.style.boxSizing = 'border-box';
-  this.myButton3.style.width = (this.menuWidth * 2).toString() + 'px';
-  this.myButton3.style.textAlign = 'center';
-  this.myButton3.style.cursor = 'pointer';
-  this.myButton3.style.padding = '0.5em 1em';
-  this.myButton3.style.backgroundColor = '#09c';
-
-
-  this.menu = new Kiwi.HUD.Widget.Menu(this.game, 0, 150);
-  this.menu.addMenuItem(this.myButton1);
-  this.menu.addMenuItem(this.myButton3);
-  this.game.huds.defaultHUD.addWidget(this.menu);
-
-  this.menu.getMenuItem(0).input.onDown.add(this.leftButton, this);
-  this.menu.getMenuItem(1).input.onDown.add(this.resetButton, this);
-
-  this.resetButton();
-
+state.preload = function () {
+  State.prototype.preload.call(this)
+  this.addImage('background', 'assets/img/bg.png')
+  this.addImage('spaceship', 'assets/img/spaceship.png')
+  this.addImage('laser1', 'assets/img/torpido.png')
+  this.addImage('enemy', 'assets/img/alien_2.png')
 }
 
-Menu.leftButton = function () {
+state.create = function () {
+  State.prototype.preload.call(this)
+  this.background = new GameObjects.StaticImage(this, this.textures.background, 0, 0)
 
-  var gameOptions = {
-    width: 768,
-    height: 512,
-  };
+  this.score = new HUD.Widget.MenuItem(this.game, 'Score : 0', 10, 10)
+  this.score.style.color = 'white'
 
-  var game = new Kiwi.Game("game-container", 'Creeps Killer', null, gameOptions);
-  var State = new Kiwi.State('Play');
+  this.spaceship = new GameObjects.StaticImage(this, this.textures.spaceship, 0, 150)
+  this.spaceship.scaleToWidth(50)
+  this.spaceship.anchorPointY = 0
+  this.spaceship.anchorPointX = 0
 
-  State.preload = function () {
-    Kiwi.State.prototype.preload.call(this);
+  this.leftKey = this.game.input.keyboard.addKey(Input.Keycodes.LEFT)
+  this.rightKey = this.game.input.keyboard.addKey(Input.Keycodes.RIGHT)
+  this.upKey = this.game.input.keyboard.addKey(Input.Keycodes.UP)
+  this.downKey = this.game.input.keyboard.addKey(Input.Keycodes.DOWN)
+  this.spaceKey = this.game.input.keyboard.addKey(Input.Keycodes.SPACEBAR)
 
-    this.addImage('space', 'assets/img/bg.png');
-    this.addImage('spaceship', 'assets/img/spaceship.png');
-    this.addImage('torpido', 'assets/img/torpido.png');
-    console.log('o');
+  this.laserGroup = new Group(this, 'lasers')
+  this.enemyGroup = new Group(this, 'lasers')
+
+  this.addChild(this.background)
+  this.addChild(this.spaceship)
+  this.addChild(this.laserGroup)
+  this.addChild(this.enemyGroup)
+  this.game.huds.defaultHUD.addWidget(this.score)
+
+  this.shot = 0
+  this.enemyLoop = 0
+}
+
+
+state.update = function () {
+  State.prototype.preload.call(this)
+  this.enemyLoop += 1
+
+  if (this.upKey.isDown) {
+    this.spaceship.transform.y -= spaceshipSpeed
   }
-
-  var projectile = function (state, y, type) {
-    Kiwi.GameObjects.Sprite.call(this, state, state.textures["torpido"], 0, y, true);
-    this.physics = this.components.add(new Kiwi.Components.ArcadePhysics(this, this.box));
-    this.physics.acceleration = new Kiwi.Geom.Point(100, 0);
-    this.physics.velocity = new Kiwi.Geom.Point(100, 0);
-
-    state.projectilesGroup.members.forEach(function (val, key) {
-      if (val.x > gameOptions.width)
-        state.projectilesGroup.members.splice(key, 1);
-    });
-    // animation while x axe attempt collision ...
-  };
-  var enemyRaid = function (state, y, type) {
-    alert("mdr");
+  if (this.downKey.isDown) {
+    this.spaceship.transform.y += spaceshipSpeed
   }
-
-  Kiwi.extend(projectile, Kiwi.GameObjects.Sprite);
-
-  State.create = function () {
-    Kiwi.State.prototype.create.call(this);
-
-    // DEFINES GROUPS
-    this.spaceGroup = new Kiwi.Group(this, 'space');
-    this.spaceShipGroup = new Kiwi.Group(this, 'spaceship');
-    this.projectilesGroup = new Kiwi.Group(this, 'projectiles');
-
-    // ADD GROUP TO SCOPE 
-    this.addChild(this.spaceGroup);
-    this.addChild(this.spaceShipGroup);
-    this.addChild(this.projectilesGroup);
-
-    // DEFINES COMPONENTS    
-    this.space = new Kiwi.GameObjects.StaticImage(this, this.textures['space'], 0, 0);
-    this.spaceship = new Kiwi.GameObjects.StaticImage(this, this.textures['spaceship'], 0, 0);
-    this.spaceship.scaleToWidth(50);
-    this.spaceship.anchorPointY = 0;
-    this.spaceship.anchorPointX = 0;
-
-    // ADD COMPONENTS TO GROUP
-    this.spaceGroup.addChild(this.space);
-    this.spaceShipGroup.addChild(this.spaceship)
-
+  if (this.leftKey.isDown) {
+    this.spaceship.transform.x -= spaceshipSpeed
   }
+  if (this.rightKey.isDown) {
+    this.spaceship.transform.x += spaceshipSpeed
+  }
+  if (this.spaceKey.isDown) this.shot += 1
+  if (this.spaceKey.isDown && this.shot === 5) {
+    this.laserGroup.addChild(new laser1(this.spaceship.x, this.spaceship.y))
+    this.shot = 0
+  }
+  this.laserGroup.members.forEach((laser, li) => {
+    laser.transform.x += 12
+    if (laser.x > 1000) laser.destroy()
+    this.enemyGroup.members.forEach((enemy, ei) => {
+      if (laser.physics.overlaps(enemy)) {
+        this.laserGroup.members.splice(li, 1)
+        this.enemyGroup.members.splice(ei, 1)
+        score += 10
+        this.score.text = getScore()
+      }
+    })
+    if (laser.physics.overlaps(this.enemyGroup)) laser.destroy()
+  })
 
-  State.update = function () {
-    Kiwi.State.prototype.update.call(this);
-    var mouse = this.game.input.mouse;
-    this.spaceship.y = mouse.y - 25;
-    if (mouse.isDown) {
-      this.projectilesGroup.addChild(new projectile(this, this.spaceship.y + 10));
-      this.game.input.mouse.reset();
+  this.enemyGroup.members.forEach((enemy, ei) => {
+    enemy.transform.x -= 5
+    if (enemy.x === -50) {
+      this.enemyGroup.members.splice(ei, 1)
     }
+  })
 
-  };
-
-  game.states.addState(State, true);
-
+  if (this.enemyLoop === 30) {
+    this.enemyGroup.addChild(new enemy1())
+    this.enemyLoop = 0
+  }
 }
 
-Menu.resetButton = function () {
-  this.menu.x = this.game.stage.width / 2;
+function laser1(x, y) {
+  GameObjects.Sprite.call(this, state, state.textures.laser1, x, y, true)
+  this.physics = this.components.add(new Components.ArcadePhysics(
+    this, this.box))
 }
 
+Kiwi.extend(laser1, Kiwi.GameObjects.Sprite);
 
-var gameOptions = {
-  width: 768,
-  height: 512
-};
+function enemy1() {
+  GameObjects.Sprite.call(this, state, state.textures.enemy, 1000, Math.random() * 512, true)
+  this.physics = this.components.add(new Components.ArcadePhysics(
+    this, this.box))
+  
+  this.scaleToWidth(50)
+  this.anchorPointY = 0
+  this.anchorPointX = 0
+}
 
-var game = new Kiwi.Game('game-container', 'Menu', Menu, gameOptions);
+Kiwi.extend(enemy1, Kiwi.GameObjects.Sprite);
+
+game.states.addState(state)
+game.states.switchState('lvl1')
