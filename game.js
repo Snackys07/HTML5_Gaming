@@ -71,6 +71,7 @@ Menu.leftButton = function () {
     var enemyRaid = function (state,y,type){
         alert("ok");      
       console.log('coucou');
+      console.log('coucou1');
     }
 
     Kiwi.extend(projectile, Kiwi.GameObjects.Sprite);
