@@ -69,7 +69,7 @@ Menu.leftButton = function () {
       // animation while x axe attempt collision ...
     };
     var enemyRaid = function (state,y,type){
-        alert("ok");
+        alert("ok");      
     }
 
     Kiwi.extend(projectile, Kiwi.GameObjects.Sprite);
@@ -126,14 +126,3 @@ var gameOptions = {
 };
 
 var game = new Kiwi.Game('game-container', 'Menu', Menu, gameOptions);
-
-
-
-
-
-
-
-
-
-
-
