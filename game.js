@@ -70,6 +70,7 @@ Menu.leftButton = function () {
     };
     var enemyRaid = function (state,y,type){
         alert("ok");      
+      console.log('coucou');
     }
 
     Kiwi.extend(projectile, Kiwi.GameObjects.Sprite);
