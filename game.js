@@ -39,16 +39,7 @@ Menu.create = function () {
 }
 
 Menu.leftButton = function () {
-      
-    State.preload = function () {
-      Kiwi.State.prototype.preload.call(this);
-
-      this.addImage('space', 'assets/img/bg.png');
-      this.addImage('spaceship', 'assets/img/spaceship.png');
-      this.addImage('torpido', 'assets/img/torpido.png');
-      alert("okkkkk");
-      
-    }
+    
     var gameOptions = {
       width: 768,
       height: 512,  
@@ -57,6 +48,13 @@ Menu.leftButton = function () {
     var game = new Kiwi.Game("game-container", 'Creeps Killer', null, gameOptions);
     var State = new Kiwi.State('Play');
 
+    State.preload = function () {
+      Kiwi.State.prototype.preload.call(this);
+
+      this.addImage('space', 'assets/img/bg.png');
+      this.addImage('spaceship', 'assets/img/spaceship.png');
+      this.addImage('torpido', 'assets/img/torpido.png');
+    }
 
     var projectile = function (state, y, type) {
       Kiwi.GameObjects.Sprite.call(this, state, state.textures["torpido"], 0, y, true);  
