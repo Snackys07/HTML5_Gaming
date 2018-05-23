@@ -1,10 +1,9 @@
 var gameOptions = {
   width: 768,
-  height: 512,
-  renderer: Kiwi.RENDERER_CANVAS,
+  height: 512,  
 };
 
-var game = new Kiwi.Game("game-container", 'Hello World', null, gameOptions);
+var game = new Kiwi.Game("game-container", 'Creeps Killer', null, gameOptions);
 var State = new Kiwi.State('Play');
 
 State.preload = function () {
@@ -18,6 +17,7 @@ State.preload = function () {
 var projectile = function (state, y, type) {
   Kiwi.GameObjects.Sprite.call(this, state, state.textures["torpido"], 0, y, true);
   // this.speed = 12;
+  // animation while x axe attempt collision ...
 };
 
 Kiwi.extend(projectile, Kiwi.GameObjects.Sprite);
@@ -25,25 +25,27 @@ Kiwi.extend(projectile, Kiwi.GameObjects.Sprite);
 State.create = function () {
   Kiwi.State.prototype.create.call(this);
 
-  this.space = new Kiwi.GameObjects.StaticImage(this, this.textures.space);
+ // DEFINES GROUPS
+  this.spaceGroup = new Kiwi.Group(this,'space');
+  this.spaceShipGroup = new Kiwi.Group(this,'spaceship');
+  this.projectilesGroup = new Kiwi.Group(this,'projectiles');
 
-  // Defines groups
-  
-  this.projectilesGroup = new Kiwi.Group(this);
-  this.spaceGroup = new Kiwi.Group(this, 'space');
-  this.spaceShipGroup = new Kiwi.Group(this, 'spaceship');
-
-  // Add groups to scope
-
+  // ADD GROUP TO SCOPE 
   this.addChild(this.spaceGroup);
   this.addChild(this.spaceShipGroup);
-  this.addChild(this.space);
+  this.addChild(this.projectilesGroup);
 
-  this.spaceship = new Kiwi.GameObjects.StaticImage(this, this.textures['spaceship'], 0, 0);
+  // DEFINES COMPONENTS    
+  this.space = new Kiwi.GameObjects.StaticImage(this, this.textures['space'], 0, 0);
+  this.spaceship = new Kiwi.GameObjects.StaticImage(this, this.textures['spaceship'], 0, 0); 
   this.spaceship.scaleToWidth(50);
   this.spaceship.anchorPointY = 0;
   this.spaceship.anchorPointX = 0;
-  this.addChild(this.spaceship);
+
+  // ADD COMPONENTS TO GROUP
+  this.spaceGroup.addChild(this.space);
+  this.spaceShipGroup.addChild(this.spaceship)
+  
 
 }
 
@@ -51,13 +53,8 @@ State.update = function () {
   Kiwi.State.prototype.update.call(this);
   var mouse = this.game.input.mouse;
   this.spaceship.y = mouse.y - 25;
-
-  // Shooting the adversary
-
-  if (mouse.isDown) {
-    // console.log(this.spaceship.y + " : " + this.spaceship.x);
-    this.projectilesGroup.addChild(new projectile(this, this.spaceship.y + 10));
-    console.log(this.projectilesGroup);
+  if (mouse.isDown) {    
+    this.projectilesGroup.addChild(new projectile(this, this.spaceship.y + 10));    
     this.game.input.mouse.reset();
   }
 
