@@ -69,9 +69,7 @@ Menu.leftButton = function () {
       // animation while x axe attempt collision ...
     };
     var enemyRaid = function (state,y,type){
-        alert("ok");      
-      console.log('coucou');
-      console.log('coucou1');
+       alert("mdr");
     }
 
     Kiwi.extend(projectile, Kiwi.GameObjects.Sprite);
