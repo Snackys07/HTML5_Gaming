@@ -1,4 +1,4 @@
-var Menu = new Kiwi.State('Play');
+var Menu = new Kiwi.State('Menu');
 
 Menu.create = function () {
 
