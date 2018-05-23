@@ -54,6 +54,7 @@ Menu.leftButton = function () {
       this.addImage('space', 'assets/img/bg.png');
       this.addImage('spaceship', 'assets/img/spaceship.png');
       this.addImage('torpido', 'assets/img/torpido.png');
+      console.log('o');
     }
 
     var projectile = function (state, y, type) {
