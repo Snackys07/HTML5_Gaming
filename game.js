@@ -15,11 +15,20 @@ State.preload = function () {
 }
 
 var projectile = function (state, y, type) {
-  Kiwi.GameObjects.Sprite.call(this, state, state.textures["torpido"], 0, y, true);
-  // this.speed = 12;
+  Kiwi.GameObjects.Sprite.call(this, state, state.textures["torpido"], 0, y, true);  
+  this.physics = this.components.add( new Kiwi.Components.ArcadePhysics( this, this.box ) );
+  this.physics.acceleration = new Kiwi.Geom.Point(100,0);
+  this.physics.velocity = new Kiwi.Geom.Point(100,0);    
+
+  state.projectilesGroup.members.forEach(function(val,key){    
+      if(val.x > gameOptions.width)
+          state.projectilesGroup.members.splice(key,1);
+  });  
   // animation while x axe attempt collision ...
 };
+var enemyRaid = function (state,y,type){
 
+}
 Kiwi.extend(projectile, Kiwi.GameObjects.Sprite);
 
 State.create = function () {
@@ -44,8 +53,7 @@ State.create = function () {
 
   // ADD COMPONENTS TO GROUP
   this.spaceGroup.addChild(this.space);
-  this.spaceShipGroup.addChild(this.spaceship)
-  
+  this.spaceShipGroup.addChild(this.spaceship)  
 
 }
 
