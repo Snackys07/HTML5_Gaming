@@ -109,6 +109,12 @@ state.update = function () {
         score += 10
         this.score.text = getScore()
       }
+
+      //level 2
+      if(score >= 500 && score <= 1000) {
+        
+      }
+
     })
     if (torpido.physics.overlaps(this.enemyGroup)) torpido.destroy()
   })
@@ -120,8 +126,7 @@ state.update = function () {
       this.enemyGroup.members.splice(index, 1)
       life--
       this.life.text = getLife()
-      // if (life <= 0) {
-      if (true) {
+      if (life <= 0) {
         // Game Over
         gameOver = true;
         this.enemyGroup.clear()
