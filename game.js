@@ -33,7 +33,7 @@ let gameOver = false;
 const getScore = () => `Score: ${score}`
 
 // function called to display life
-const getLife = () => `Lifesss: ${life}`
+const getLife = () => `Life: ${life}`
 
 // function called to display level
 const getLevel = () => `Level: ${level}`
