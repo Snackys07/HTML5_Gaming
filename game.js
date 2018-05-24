@@ -9,18 +9,24 @@ const {
   extend,
 } = Kiwi
 
-const game = new Game()
+var gameOptions = {
+  width: 768,
+  height: 512
+};
+
 const state = new State('lvl1')
+const game = new Game('game-container', 'LoadingAnImage', null, gameOptions);
 
 const spaceshipSpeed = 4
 let score = 0
 let life = 5
+let gameOver = false;
 
 // function called to display score
-const getScore = () => `Score : ${score}`
+const getScore = () => `Score: ${score}`
 
 // function called to display life
-const getLife = () => `Vies : ${life}`
+const getLife = () => `Lifes: ${life}`
 
 state.preload = function () {
   State.prototype.preload.call(this)
@@ -40,7 +46,7 @@ state.create = function () {
   this.game.huds.defaultHUD.addWidget(this.score)
 
   // life
-  this.life = new HUD.Widget.MenuItem(this.game, 'Vies : 5', 10, 30)
+  this.life = new HUD.Widget.MenuItem(this.game, getLife(), 10, 30)
   this.life.style.color = 'white'
   this.game.huds.defaultHUD.addWidget(this.life)
 
@@ -94,8 +100,8 @@ state.update = function () {
     torpido.transform.x += 12
     if (torpido.x > 1000) torpido.destroy()
     this.enemyGroup.members.forEach((enemy, ei) => {
-      // if they overlaps with an enmy remove the torpido
-      // and remove the enmy then add 10 pts to the 
+      // if they overlaps with an enemy remove the torpido
+      // and remove the enemy then add 10 pts to the 
       // score
       if (torpido.physics.overlaps(enemy)) {
         this.torpidoGroup.members.splice(li, 1)
@@ -109,18 +115,23 @@ state.update = function () {
 
   // decrement life if there is collision
   this.enemyGroup.members.forEach((enemy, index) => {
-
-    if(enemy.physics.overlaps(this.spaceship)) {
-        enemy.destroy();
-        this.enemyGroup.members.splice(index, 1)
-        life--
-        this.life.text = getLife()
-        if (life <= 0) {
-          this.enemyGroup.clear()
-        }
+    if (enemy.physics.overlaps(this.spaceship)) {
+      enemy.destroy();
+      this.enemyGroup.members.splice(index, 1)
+      life--
+      this.life.text = getLife()
+      // if (life <= 0) {
+      if (true) {
+        // Game Over
+        gameOver = true;
+        this.enemyGroup.clear()
+        this.gameOver = new HUD.Widget.MenuItem(this.game, 'Game Over', gameOptions.width * 0.5, gameOptions.height * 0.5)
+        console.log(this.gameOver.style)
+        this.gameOver.style.color = 'red'
+        this.game.huds.defaultHUD.addWidget(this.gameOver)
+      }
     }
   })
-
 
   // move enemy and remove them if they leave the canvas
   this.enemyGroup.members.forEach((enemy, ei) => {
@@ -129,7 +140,7 @@ state.update = function () {
   })
 
   // enemy loop
-  if (this.enemyLoop === 30) {
+  if (this.enemyLoop === 30 && !gameOver) {
     this.enemyGroup.addChild(new enemy())
     this.enemyLoop = 0
   }
@@ -145,9 +156,9 @@ extend(torpido, GameObjects.Sprite)
 
 // enemy object
 function enemy() {
-  GameObjects.Sprite.call(this, state, state.textures.enemy, 1000, Math.random() * 512, true)
+  let spawnY = Math.round(Math.random() * (gameOptions.height - 50 - 50 + 1) + 50);
+  GameObjects.Sprite.call(this, state, state.textures.enemy, 1000, spawnY, true)
   this.physics = this.components.add(new Components.ArcadePhysics(this, this.box))
-
   // scale the enemy to the correct size
   this.scaleToWidth(50)
   this.anchorPointY = 0
