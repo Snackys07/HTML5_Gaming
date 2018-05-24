@@ -27,7 +27,6 @@ state.preload = function () {
 
 state.create = function () {
   State.prototype.preload.call(this)
-
   this.background = new GameObjects.StaticImage(this, this.textures.background, 0, 0)
 
   // score
@@ -57,7 +56,6 @@ state.create = function () {
   this.addChild(this.spaceship)
   this.addChild(this.torpidoGroup)
   this.addChild(this.enemyGroup)
-
 
   // iterators
   this.shot = 0
