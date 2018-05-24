@@ -14,9 +14,13 @@ const state = new State('lvl1')
 
 const spaceshipSpeed = 4
 let score = 0
+let life = 5
 
 // function called to display score
 const getScore = () => `Score : ${score}`
+
+// function called to display life
+const getLife = () => `Vies : ${life}`
 
 state.preload = function () {
   State.prototype.preload.call(this)
@@ -34,6 +38,11 @@ state.create = function () {
   this.score = new HUD.Widget.MenuItem(this.game, 'Score : 0', 10, 10)
   this.score.style.color = 'white'
   this.game.huds.defaultHUD.addWidget(this.score)
+
+  // life
+  this.life = new HUD.Widget.MenuItem(this.game, 'Vies : 5', 10, 30)
+  this.life.style.color = 'white'
+  this.game.huds.defaultHUD.addWidget(this.life)
 
   // spaceship
   this.spaceship = new GameObjects.StaticImage(this, this.textures.spaceship, 0, 150)
@@ -61,6 +70,7 @@ state.create = function () {
   // iterators
   this.shot = 0
   this.enemyLoop = 0
+
 }
 
 state.update = function () {
@@ -97,6 +107,22 @@ state.update = function () {
     })
     if (torpido.physics.overlaps(this.enemyGroup)) torpido.destroy()
   })
+
+  // decrement life if there is collision
+  this.enemyGroup.members.forEach((enemy, index) => {
+
+    if(enemy.physics.overlaps(this.spaceship)) {
+        enemy.destroy();
+        this.enemyGroup.members.splice(index, 1)
+        life--
+        this.life.text = getLife()
+        if(life <= 0) {
+          this.enemyGroup.clear()
+          
+        }
+    }
+  })
+
 
   // move enemy and remove them if they leave the canvas
   this.enemyGroup.members.forEach((enemy, ei) => {
