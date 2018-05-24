@@ -19,7 +19,7 @@ state.preload = function () {
   State.prototype.preload.call(this)
   this.addImage('background', 'assets/img/bg.png')
   this.addImage('spaceship', 'assets/img/spaceship.png')
-  this.addImage('laser1', 'assets/img/torpido.png')
+  this.addImage('torpido', 'assets/img/torpido.png')
   this.addImage('enemy', 'assets/img/alien_2.png')
 }
 
@@ -41,12 +41,12 @@ state.create = function () {
   this.downKey = this.game.input.keyboard.addKey(Input.Keycodes.DOWN)
   this.spaceKey = this.game.input.keyboard.addKey(Input.Keycodes.SPACEBAR)
 
-  this.laserGroup = new Group(this, 'lasers')
-  this.enemyGroup = new Group(this, 'lasers')
+  this.torpidoGroup = new Group(this, 'torpidos')
+  this.enemyGroup = new Group(this, 'torpidos')
 
   this.addChild(this.background)
   this.addChild(this.spaceship)
-  this.addChild(this.laserGroup)
+  this.addChild(this.torpidoGroup)
   this.addChild(this.enemyGroup)
   this.game.huds.defaultHUD.addWidget(this.score)
 
@@ -73,21 +73,21 @@ state.update = function () {
   }
   if (this.spaceKey.isDown) this.shot += 1
   if (this.spaceKey.isDown && this.shot === 5) {
-    this.laserGroup.addChild(new laser1(this.spaceship.x, this.spaceship.y))
+    this.torpidoGroup.addChild(new torpido(this.spaceship.x, this.spaceship.y))
     this.shot = 0
   }
-  this.laserGroup.members.forEach((laser, li) => {
-    laser.transform.x += 12
-    if (laser.x > 1000) laser.destroy()
+  this.torpidoGroup.members.forEach((torpido, li) => {
+    torpido.transform.x += 12
+    if (torpido.x > 1000) torpido.destroy()
     this.enemyGroup.members.forEach((enemy, ei) => {
-      if (laser.physics.overlaps(enemy)) {
-        this.laserGroup.members.splice(li, 1)
+      if (torpido.physics.overlaps(enemy)) {
+        this.torpidoGroup.members.splice(li, 1)
         this.enemyGroup.members.splice(ei, 1)
         score += 10
         this.score.text = getScore()
       }
     })
-    if (laser.physics.overlaps(this.enemyGroup)) laser.destroy()
+    if (torpido.physics.overlaps(this.enemyGroup)) torpido.destroy()
   })
 
   this.enemyGroup.members.forEach((enemy, ei) => {
@@ -103,13 +103,13 @@ state.update = function () {
   }
 }
 
-function laser1(x, y) {
-  GameObjects.Sprite.call(this, state, state.textures.laser1, x, y, true)
+function torpido(x, y) {
+  GameObjects.Sprite.call(this, state, state.textures.torpido, x, y, true)
   this.physics = this.components.add(new Components.ArcadePhysics(
     this, this.box))
 }
 
-Kiwi.extend(laser1, Kiwi.GameObjects.Sprite);
+Kiwi.extend(torpido, Kiwi.GameObjects.Sprite);
 
 function enemy1() {
   GameObjects.Sprite.call(this, state, state.textures.enemy, 1000, Math.random() * 512, true)
