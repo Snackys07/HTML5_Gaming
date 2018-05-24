@@ -26,6 +26,7 @@ const game = new Game('game-container', 'LoadingAnImage', null, gameOptions);
 const spaceshipSpeed = 4
 let score = 0
 let life = 5
+let level = 1
 let gameOver = false;
 
 // function called to display score
@@ -33,6 +34,9 @@ const getScore = () => `Score: ${score}`
 
 // function called to display life
 const getLife = () => `Lifes: ${life}`
+
+// function called to display level
+const getLevel = () => `Level: ${level}`
 
 state.preload = function () {
   State.prototype.preload.call(this)
@@ -60,6 +64,11 @@ state.create = function () {
   this.life.style.color = 'white'
   this.game.huds.defaultHUD.addWidget(this.life)
 
+  // level
+  this.level = new HUD.Widget.MenuItem(this.game, getLevel(), 10, 50)
+  this.level.style.color = 'white'
+  this.game.huds.defaultHUD.addWidget(this.level)
+
   // spaceship
   this.spaceship = new GameObjects.StaticImage(this, this.textures.spaceship, 0, 150)  
   this.spaceship.scaleToWidth(50)
@@ -69,7 +78,7 @@ state.create = function () {
   this.spaceship.anchorPointY = 0
   this.spaceship.anchorPointX = 0
 
-  // keys to mouve the spaceship
+  // keys to move the spaceship
   this.leftKey = this.game.input.keyboard.addKey(Input.Keycodes.LEFT)
   this.rightKey = this.game.input.keyboard.addKey(Input.Keycodes.RIGHT)
   this.upKey = this.game.input.keyboard.addKey(Input.Keycodes.UP)
@@ -122,9 +131,29 @@ state.update = function () {
         this.score.text = getScore()
       }
 
-      //level 2
-      if(score >= 500 && score <= 1000) {
-
+      //levels
+      if(score === 0 && score < 100) {
+        this.level.text = getLevel()
+      } else if(score >= 100 && score < 200) {
+        if(level < 2) {
+          level++
+        }
+        this.level.text = getLevel()
+      } else if(score >= 200 && score < 300) {
+        if(level < 3) {
+          level++
+        }
+        this.level.text = getLevel()
+      } else if(score >= 300 && score < 400) {
+        if(level < 4) {
+          level++
+        }
+        this.level.text = getLevel()
+      } else if(score >= 400) {
+        if(level < 5) {
+          level++
+        }
+        this.level.text = getLevel()
       }
 
     })
@@ -142,7 +171,7 @@ state.update = function () {
         // Game Over
         gameOver = true;
         this.enemyGroup.clear()
-        this.gameOver = new HUD.Widget.MenuItem(this.game, 'Game Over', gameOptions.width * 0.5 - 40, gameOptions.height * 0.5)        
+        this.gameOver = new HUD.Widget.MenuItem(this.game, 'Game Over', gameOptions.width * 0.5 - 40, gameOptions.height * 0.5)                
         this.gameOver.style.color = 'red'
         this.game.huds.defaultHUD.addWidget(this.gameOver)
       }
