@@ -123,6 +123,7 @@ function enemy() {
   GameObjects.Sprite.call(this, state, state.textures.enemy, 1000, Math.random() * 512, true)
   this.physics = this.components.add(new Components.ArcadePhysics(this, this.box))
 
+  // scale the enemy to the correct size
   this.scaleToWidth(50)
   this.anchorPointY = 0
   this.anchorPointX = 0
