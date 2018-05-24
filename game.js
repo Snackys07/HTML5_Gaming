@@ -112,7 +112,7 @@ state.update = function () {
 
       //level 2
       if(score >= 500 && score <= 1000) {
-        
+
       }
 
     })
@@ -130,7 +130,7 @@ state.update = function () {
         // Game Over
         gameOver = true;
         this.enemyGroup.clear()
-        this.gameOver = new HUD.Widget.MenuItem(this.game, 'Game Over', gameOptions.width * 0.5, gameOptions.height * 0.5)
+        this.gameOver = new HUD.Widget.MenuItem(this.game, 'Game Over', gameOptions.width * 0.5 - 40, gameOptions.height * 0.5)
         console.log(this.gameOver.style)
         this.gameOver.style.color = 'red'
         this.game.huds.defaultHUD.addWidget(this.gameOver)
