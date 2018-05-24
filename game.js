@@ -75,7 +75,7 @@ state.create = function () {
   this.spaceship.anchorPointY = 0
   this.spaceship.anchorPointX = 0
 
-  // keys to mouve the spaceship
+  // keys to move the spaceship
   this.leftKey = this.game.input.keyboard.addKey(Input.Keycodes.LEFT)
   this.rightKey = this.game.input.keyboard.addKey(Input.Keycodes.RIGHT)
   this.upKey = this.game.input.keyboard.addKey(Input.Keycodes.UP)
