@@ -168,7 +168,7 @@ state.update = function () {
       life--
       this.life.text = getLife()
       if (life <= 0) {
-        level = 0
+        level = 1
         this.level.text = getLevel()
         // Game Over
         gameOver = true;
