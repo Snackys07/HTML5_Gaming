@@ -6,6 +6,7 @@ const {
   Components,
   Group,
   HUD,
+  extend,
 } = Kiwi
 
 const game = new Game()
@@ -116,7 +117,7 @@ function torpido(x, y) {
   this.physics = this.components.add(new Components.ArcadePhysics(this, this.box))
 }
 
-Kiwi.extend(torpido, Kiwi.GameObjects.Sprite);
+extend(torpido, GameObjects.Sprite);
 
 // enemy object
 function enemy() {
@@ -129,7 +130,7 @@ function enemy() {
   this.anchorPointX = 0
 }
 
-Kiwi.extend(enemy, Kiwi.GameObjects.Sprite);
+extend(enemy, GameObjects.Sprite);
 
 game.states.addState(state)
 game.states.switchState('lvl1')
