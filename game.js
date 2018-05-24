@@ -70,7 +70,6 @@ state.create = function () {
   // iterators
   this.shot = 0
   this.enemyLoop = 0
-
 }
 
 state.update = function () {
@@ -116,9 +115,8 @@ state.update = function () {
         this.enemyGroup.members.splice(index, 1)
         life--
         this.life.text = getLife()
-        if(life <= 0) {
+        if (life <= 0) {
           this.enemyGroup.clear()
-          
         }
     }
   })
