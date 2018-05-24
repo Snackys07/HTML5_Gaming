@@ -13,7 +13,13 @@ var gameOptions = {
   width: 768,
   height: 512
 };
-
+var enemyRands = [
+    "enemy1",
+    "enemy2",
+    "enemy3",
+    "enemy4",
+    "enemy5"
+];
 const state = new State('lvl1')
 const game = new Game('game-container', 'LoadingAnImage', null, gameOptions);
 
@@ -33,7 +39,11 @@ state.preload = function () {
   this.addImage('background', 'assets/img/bg.png')
   this.addImage('spaceship', 'assets/img/spaceship.png')
   this.addImage('torpido', 'assets/img/torpido.png')
-  this.addImage('enemy', 'assets/img/alien_2.png')
+  this.addImage('enemy1', 'assets/img/alien_1.png')
+  this.addImage('enemy2', 'assets/img/alien_2.png')
+  this.addImage('enemy3', 'assets/img/alien_3.png')
+  this.addImage('enemy4', 'assets/img/alien_4.png')
+  this.addImage('enemy5', 'assets/img/alien_5.png')
 }
 
 state.create = function () {
@@ -145,8 +155,9 @@ state.update = function () {
   })
 
   // enemy loop
-  if (this.enemyLoop === 30 && !gameOver) {
-    this.enemyGroup.addChild(new enemy())
+  if (this.enemyLoop === 30 && !gameOver) {        
+    let keyRand = Math.floor(Math.random() * enemyRands.length);
+      this.enemyGroup.addChild(new enemy(enemyRands[keyRand]))    
     this.enemyLoop = 0
   }
 }
@@ -160,9 +171,9 @@ function torpido(x, y) {
 extend(torpido, GameObjects.Sprite)
 
 // enemy object
-function enemy() {
+function enemy(enemyType) {
   let spawnY = Math.round(Math.random() * (gameOptions.height - 50 - 50 + 1) + 50);
-  GameObjects.Sprite.call(this, state, state.textures.enemy, 1000, spawnY, true)
+  GameObjects.Sprite.call(this, state, state.textures[enemyType], 1000, spawnY, true)
   this.physics = this.components.add(new Components.ArcadePhysics(this, this.box))
   // scale the enemy to the correct size
   this.scaleToWidth(50)
