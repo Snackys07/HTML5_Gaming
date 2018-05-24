@@ -61,8 +61,11 @@ state.create = function () {
   this.game.huds.defaultHUD.addWidget(this.life)
 
   // spaceship
-  this.spaceship = new GameObjects.StaticImage(this, this.textures.spaceship, 0, 150)
+  this.spaceship = new GameObjects.StaticImage(this, this.textures.spaceship, 0, 150)  
   this.spaceship.scaleToWidth(50)
+  this.spaceship.scaleToHeight(50);
+  this.spaceship.width = 50;
+  this.spaceship.height = 50;
   this.spaceship.anchorPointY = 0
   this.spaceship.anchorPointX = 0
 
@@ -89,18 +92,17 @@ state.create = function () {
 }
 
 state.update = function () {
-  State.prototype.preload.call(this)
-  this.enemyLoop += 1
-
+  State.prototype.preload.call(this)  
+  this.enemyLoop += 1  
   // move the spaceship according to the pressed keys at the speed
-  // specified in the spaceshipSpeed var
-  if (this.upKey.isDown) this.spaceship.transform.y -= spaceshipSpeed
-  if (this.downKey.isDown) this.spaceship.transform.y += spaceshipSpeed
-  if (this.leftKey.isDown) this.spaceship.transform.x -= spaceshipSpeed
-  if (this.rightKey.isDown) this.spaceship.transform.x += spaceshipSpeed
+  // specified in the spaceshipSpeed var  
+  if (this.upKey.isDown && this.spaceship.y > 0) this.spaceship.transform.y -= spaceshipSpeed
+  if (this.downKey.isDown && this.spaceship.y < gameOptions.height - this.spaceship.height) this.spaceship.transform.y += spaceshipSpeed
+  if (this.leftKey.isDown && this.spaceship.x > 0) this.spaceship.transform.x -= spaceshipSpeed
+  if (this.rightKey.isDown && this.spaceship.x < gameOptions.width - this.spaceship.height) this.spaceship.transform.x += spaceshipSpeed
   if (this.spaceKey.isDown) this.shot += 1
   if (this.spaceKey.isDown && this.shot === 5) {
-    this.torpidoGroup.addChild(new torpido(this.spaceship.x, this.spaceship.y))
+    this.torpidoGroup.addChild(new torpido(this.spaceship.x, this.spaceship.y + 7))
     this.shot = 0
   }
 
@@ -140,8 +142,7 @@ state.update = function () {
         // Game Over
         gameOver = true;
         this.enemyGroup.clear()
-        this.gameOver = new HUD.Widget.MenuItem(this.game, 'Game Over', gameOptions.width * 0.5 - 40, gameOptions.height * 0.5)
-        console.log(this.gameOver.style)
+        this.gameOver = new HUD.Widget.MenuItem(this.game, 'Game Over', gameOptions.width * 0.5 - 40, gameOptions.height * 0.5)        
         this.gameOver.style.color = 'red'
         this.game.huds.defaultHUD.addWidget(this.gameOver)
       }
@@ -152,7 +153,7 @@ state.update = function () {
   this.enemyGroup.members.forEach((enemy, ei) => {
     enemy.transform.x -= 5
     if (enemy.x === -50) this.enemyGroup.members.splice(ei, 1)
-  })
+  })  
 
   // enemy loop
   if (this.enemyLoop === 30 && !gameOver) {        
