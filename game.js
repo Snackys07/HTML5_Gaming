@@ -98,7 +98,7 @@ state.update = function () {
   })
 
   if (this.enemyLoop === 30) {
-    this.enemyGroup.addChild(new enemy1())
+    this.enemyGroup.addChild(new enemy())
     this.enemyLoop = 0
   }
 }
@@ -111,7 +111,7 @@ function torpido(x, y) {
 
 Kiwi.extend(torpido, Kiwi.GameObjects.Sprite);
 
-function enemy1() {
+function enemy() {
   GameObjects.Sprite.call(this, state, state.textures.enemy, 1000, Math.random() * 512, true)
   this.physics = this.components.add(new Components.ArcadePhysics(
     this, this.box))
@@ -121,7 +121,7 @@ function enemy1() {
   this.anchorPointX = 0
 }
 
-Kiwi.extend(enemy1, Kiwi.GameObjects.Sprite);
+Kiwi.extend(enemy, Kiwi.GameObjects.Sprite);
 
 game.states.addState(state)
 game.states.switchState('lvl1')
