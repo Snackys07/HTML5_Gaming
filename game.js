@@ -7,12 +7,14 @@ const {
   Group,
   HUD,
 } = Kiwi
+
 const game = new Game()
 const state = new State('lvl1')
 
 const spaceshipSpeed = 4
 let score = 0
 
+// function called to display score
 const getScore = () => `Score : ${score}`
 
 state.preload = function () {
@@ -25,57 +27,59 @@ state.preload = function () {
 
 state.create = function () {
   State.prototype.preload.call(this)
+
   this.background = new GameObjects.StaticImage(this, this.textures.background, 0, 0)
 
+  // score
   this.score = new HUD.Widget.MenuItem(this.game, 'Score : 0', 10, 10)
   this.score.style.color = 'white'
+  this.game.huds.defaultHUD.addWidget(this.score)
 
+  // spaceship
   this.spaceship = new GameObjects.StaticImage(this, this.textures.spaceship, 0, 150)
   this.spaceship.scaleToWidth(50)
   this.spaceship.anchorPointY = 0
   this.spaceship.anchorPointX = 0
 
+  // keys to mouve the spaceship
   this.leftKey = this.game.input.keyboard.addKey(Input.Keycodes.LEFT)
   this.rightKey = this.game.input.keyboard.addKey(Input.Keycodes.RIGHT)
   this.upKey = this.game.input.keyboard.addKey(Input.Keycodes.UP)
   this.downKey = this.game.input.keyboard.addKey(Input.Keycodes.DOWN)
   this.spaceKey = this.game.input.keyboard.addKey(Input.Keycodes.SPACEBAR)
 
+  // groups
   this.torpidoGroup = new Group(this, 'torpidos')
   this.enemyGroup = new Group(this, 'torpidos')
 
+  // add childs
   this.addChild(this.background)
   this.addChild(this.spaceship)
   this.addChild(this.torpidoGroup)
   this.addChild(this.enemyGroup)
-  this.game.huds.defaultHUD.addWidget(this.score)
 
+
+  // iterators
   this.shot = 0
   this.enemyLoop = 0
 }
-
 
 state.update = function () {
   State.prototype.preload.call(this)
   this.enemyLoop += 1
 
-  if (this.upKey.isDown) {
-    this.spaceship.transform.y -= spaceshipSpeed
-  }
-  if (this.downKey.isDown) {
-    this.spaceship.transform.y += spaceshipSpeed
-  }
-  if (this.leftKey.isDown) {
-    this.spaceship.transform.x -= spaceshipSpeed
-  }
-  if (this.rightKey.isDown) {
-    this.spaceship.transform.x += spaceshipSpeed
-  }
+  // handle keys
+  if (this.upKey.isDown) this.spaceship.transform.y -= spaceshipSpeed
+  if (this.downKey.isDown) this.spaceship.transform.y += spaceshipSpeed
+  if (this.leftKey.isDown) this.spaceship.transform.x -= spaceshipSpeed
+  if (this.rightKey.isDown) this.spaceship.transform.x += spaceshipSpeed
   if (this.spaceKey.isDown) this.shot += 1
   if (this.spaceKey.isDown && this.shot === 5) {
     this.torpidoGroup.addChild(new torpido(this.spaceship.x, this.spaceship.y))
     this.shot = 0
   }
+
+  // torpido group
   this.torpidoGroup.members.forEach((torpido, li) => {
     torpido.transform.x += 12
     if (torpido.x > 1000) torpido.destroy()
@@ -90,19 +94,20 @@ state.update = function () {
     if (torpido.physics.overlaps(this.enemyGroup)) torpido.destroy()
   })
 
+  // enemy group
   this.enemyGroup.members.forEach((enemy, ei) => {
     enemy.transform.x -= 5
-    if (enemy.x === -50) {
-      this.enemyGroup.members.splice(ei, 1)
-    }
+    if (enemy.x === -50) this.enemyGroup.members.splice(ei, 1)
   })
 
+  // enemy loop
   if (this.enemyLoop === 30) {
     this.enemyGroup.addChild(new enemy())
     this.enemyLoop = 0
   }
 }
 
+// torpido object
 function torpido(x, y) {
   GameObjects.Sprite.call(this, state, state.textures.torpido, x, y, true)
   this.physics = this.components.add(new Components.ArcadePhysics(
@@ -111,11 +116,11 @@ function torpido(x, y) {
 
 Kiwi.extend(torpido, Kiwi.GameObjects.Sprite);
 
+// enemy object
 function enemy() {
   GameObjects.Sprite.call(this, state, state.textures.enemy, 1000, Math.random() * 512, true)
-  this.physics = this.components.add(new Components.ArcadePhysics(
-    this, this.box))
-  
+  this.physics = this.components.add(new Components.ArcadePhysics(this, this.box))
+
   this.scaleToWidth(50)
   this.anchorPointY = 0
   this.anchorPointX = 0
