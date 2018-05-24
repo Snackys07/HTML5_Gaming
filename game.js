@@ -168,6 +168,8 @@ state.update = function () {
       life--
       this.life.text = getLife()
       if (life <= 0) {
+        level = 0
+        this.level.text = getLevel()
         // Game Over
         gameOver = true;
         this.enemyGroup.clear()
