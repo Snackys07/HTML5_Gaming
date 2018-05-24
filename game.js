@@ -66,7 +66,8 @@ state.update = function () {
   State.prototype.preload.call(this)
   this.enemyLoop += 1
 
-  // handle keys
+  // move the spaceship according to the pressed keys at the speed
+  // specified in the spaceshipSpeed var
   if (this.upKey.isDown) this.spaceship.transform.y -= spaceshipSpeed
   if (this.downKey.isDown) this.spaceship.transform.y += spaceshipSpeed
   if (this.leftKey.isDown) this.spaceship.transform.x -= spaceshipSpeed
@@ -77,11 +78,15 @@ state.update = function () {
     this.shot = 0
   }
 
-  // torpido group
+  // move the torpidos and remove them if they are leaving the canvas
+  // or are hiting an enemy
   this.torpidoGroup.members.forEach((torpido, li) => {
     torpido.transform.x += 12
     if (torpido.x > 1000) torpido.destroy()
     this.enemyGroup.members.forEach((enemy, ei) => {
+      // if they overlaps with an enmy remove the torpido
+      // and remove the enmy then add 10 pts to the 
+      // score
       if (torpido.physics.overlaps(enemy)) {
         this.torpidoGroup.members.splice(li, 1)
         this.enemyGroup.members.splice(ei, 1)
@@ -92,7 +97,7 @@ state.update = function () {
     if (torpido.physics.overlaps(this.enemyGroup)) torpido.destroy()
   })
 
-  // enemy group
+  // move enemy and remove them if they leave the canvas
   this.enemyGroup.members.forEach((enemy, ei) => {
     enemy.transform.x -= 5
     if (enemy.x === -50) this.enemyGroup.members.splice(ei, 1)
@@ -108,8 +113,7 @@ state.update = function () {
 // torpido object
 function torpido(x, y) {
   GameObjects.Sprite.call(this, state, state.textures.torpido, x, y, true)
-  this.physics = this.components.add(new Components.ArcadePhysics(
-    this, this.box))
+  this.physics = this.components.add(new Components.ArcadePhysics(this, this.box))
 }
 
 Kiwi.extend(torpido, Kiwi.GameObjects.Sprite);
