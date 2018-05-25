@@ -21,17 +21,15 @@ var enemyRands = [
     "enemy5"
 ];
 
-var enemyRaid = true;
 const state = new State('lvl1')
 const bossState = new State("bossLevel");
 const game = new Game('game-container', 'LoadingAnImage', null, gameOptions);
 
-const spaceshipSpeed = 8;
+let spaceshipSpeed = 8;
 let score = 0;
 let life = 5;
 let level = 0;
 let gameOver = false;
-let bossFighted = false;
 let cadence = 30;
 let inputNewBoss = true;
 
@@ -133,7 +131,7 @@ state.update = function () {
       if (this.leftKey.isDown && this.spaceship.x > 0) this.spaceship.transform.x -= spaceshipSpeed
       if (this.rightKey.isDown && this.spaceship.x < gameOptions.width - this.spaceship.height) this.spaceship.transform.x += spaceshipSpeed
       if (this.spaceKey.isDown) this.shot += 1
-      if (this.spaceKey.isDown && this.shot === 5) {
+      if (this.spaceKey.isDown && this.shot == 5) {
           this.torpidoGroup.addChild(new torpido(this.spaceship.x, this.spaceship.y + 7))
           this.shot = 0
       }
@@ -141,8 +139,8 @@ state.update = function () {
   // move the torpidos and remove them if they are leaving the canvas
   // or are hiting an enemy  
   this.torpidoGroup.members.forEach((torpido, li) => {
-      torpido.transform.x += 12
-      if (torpido.x > 1000) torpido.destroy()      
+      torpido.transform.x += 12;
+      if (torpido.x > gameOptions.width) torpido.destroy()      
           this.enemyGroup.members.forEach((enemy, ei) => {
               // if they overlaps with an enemy remove the torpido
               // and remove the enemy then add 10 pts to the 
@@ -153,59 +151,77 @@ state.update = function () {
                   if(inputNewBoss) score += 5;
                   this.score.text = getScore()
               }
-              //levels                                
-              switch(score){
+              //levels              
+              switch(score){                
                 case 200: 
                     if(inputNewBoss){
-                      this.bossGroup.addChild(new boss("boss1"));                      
+                      this.enemyLoop = 0;                      
+                      this.bossGroup.addChild(new boss("boss1"));                                        
+                      cadence = 25;
+                      spaceshipSpeed +=1
                       inputNewBoss = false;
-                      cadence = 24;                
-                    }                  
-                    // enemyRaid = false;
-                    // this.enemyGroup.clear();    
+                    }                                        
+                break;
+
+                case 300:
+                      this.enemyLoop = 0;
+                      this.bgGroupe.clear();
+                      this.bgGroupe.addChild(new GameObjects.StaticImage(this, this.textures["background2"], 0, 0))                                                                                                
                 break;
                 case 500:
                 if(inputNewBoss){
-                    this.bossGroup.addChild(new boss("boss2"));
-                    this.bgGroupe.addChild(new GameObjects.StaticImage(this, this.textures["background2"], 0, 0))                                                                            
+                    this.enemyLoop = 0;
+                    this.bossGroup.addChild(new boss("boss2"));   
+                    cadence = 15
+                    spaceshipSpeed +=1
                     inputNewBoss = false;
                 }
-                    // enemyRaid = false;
-                    // this.enemyGroup.clear();                    
-                    cadence = 18
+                break;
+                case 600:
+                      this.enemyLoop = 0;
+                      this.bgGroupe.clear();
+                      this.bgGroupe.addChild(new GameObjects.StaticImage(this, this.textures["background3"], 0, 0))                                                                            
                 break;
                 case 800:
                   if(inputNewBoss){
-                    this.bossGroup.addChild(new boss("boss3"));
-                    this.bgGroupe.addChild(new GameObjects.StaticImage(this, this.textures["background3"], 0, 0))                                  
+                    this.enemyLoop = 0;
+                    this.bossGroup.addChild(new boss("boss3"));                    
+                    cadence = 10      
+                    spaceshipSpeed +=1              
                     inputNewBoss = false;
-                  }
-                    // enemyRaid = false;
-                    // this.enemyGroup.clear();                    
-                    cadence = 12
+                  }                    
+                break;
+                case 900:
+                      this.enemyLoop = 0;
+                      this.bgGroupe.clear();
+                      this.bgGroupe.addChild(new GameObjects.StaticImage(this, this.textures["background4"], 0, 0))                                  
                 break;
                 case 1100:
-                  if(inputNewBoss && score > 2100){
+                  if(inputNewBoss){
+                    this.enemyLoop = 0;
                     this.bossGroup.addChild(new boss("boss4"));
-                    this.bgGroupe.addChild(new GameObjects.StaticImage(this, this.textures["background4"], 0, 0))                                  
+                    cadence = 5
+                    spaceshipSpeed +=1
                     inputNewBoss = false;
                   }
-                    // enemyRaid = false;
-                    // this.enemyGroup.clear();                    
-                    cadence = 6
+                break;
+                case 1200:
+                        this.enemyLoop = 0;
+                        this.bgGroupe.clear();
+                        this.bgGroupe.addChild(new GameObjects.StaticImage(this, this.textures["background5"], 0, 0))                                  
                 break;
                 case 1400:
-                    if(inputNewBoss){
-                      this.bossGroup.addChild(new boss("boss5"));
-                      this.bgGroupe.addChild(new GameObjects.StaticImage(this, this.textures["background5"], 0, 0))                                  
+                    if(inputNewBoss){    
+                      this.enemyLoop = 0;                
+                      this.bossGroup.addChild(new boss("boss5"));  
+                      cadence = 3
+                      spaceshipSpeed +=1
                       inputNewBoss = false
-                    }
-                    // enemyRaid = false;
-                    // this.enemyGroup.clear();                    
-                    cadence = 3
+                    }                    
                 break;
-
-
+                default:
+                // 
+                break;
               }
 
             if (torpido.physics.overlaps(this.enemyGroup)) torpido.destroy()
@@ -218,9 +234,7 @@ state.update = function () {
             this.bossGroup.members.splice(ei,1);          
             score+=100;                 
             level++;   
-            bossFighted = true;
-            inputNewBoss = true;
-            this.enemyLoop = 0;
+            inputNewBoss = true;            
             this.score.text = getScore()
             this.level.text = getLevel()
           }
@@ -274,7 +288,7 @@ state.update = function () {
   })
 
   // enemy loop  
-  if (this.enemyLoop === cadence && !gameOver) {
+  if (this.enemyLoop == cadence && !gameOver) {
       let keyRand = Math.floor(Math.random() * enemyRands.length);
       this.enemyGroup.addChild(new enemy(enemyRands[keyRand]))
       this.enemyLoop = 0
@@ -289,7 +303,7 @@ function torpido(x, y) {
 // enemy object
 function enemy(enemyType) {
   let spawnY = Math.round(Math.random() * (gameOptions.height - 50 - 50 + 1) + 50);
-  GameObjects.Sprite.call(this, state, state.textures[enemyType], 1000, spawnY, true)
+  GameObjects.Sprite.call(this, state, state.textures[enemyType], gameOptions.width , spawnY, true)
   this.physics = this.components.add(new Components.ArcadePhysics(this, this.box))
   // scale the enemy to the correct size
   this.scaleToWidth(50)
