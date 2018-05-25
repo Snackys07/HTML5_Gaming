@@ -26,13 +26,14 @@ const state = new State('lvl1')
 const bossState = new State("bossLevel");
 const game = new Game('game-container', 'LoadingAnImage', null, gameOptions);
 
-const spaceshipSpeed = 4;
+const spaceshipSpeed = 8;
 let score = 0;
 let life = 5;
 let level = 0;
 let gameOver = false;
 let bossFighted = false;
 let cadence = 30;
+let inputNewBoss = true;
 
 // function called to display score
 const getScore = () => `Score: ${score}`
@@ -141,8 +142,7 @@ state.update = function () {
   // or are hiting an enemy  
   this.torpidoGroup.members.forEach((torpido, li) => {
       torpido.transform.x += 12
-      if (torpido.x > 1000) torpido.destroy()
-      if (enemyRaid) {
+      if (torpido.x > 1000) torpido.destroy()      
           this.enemyGroup.members.forEach((enemy, ei) => {
               // if they overlaps with an enemy remove the torpido
               // and remove the enemy then add 10 pts to the 
@@ -150,45 +150,59 @@ state.update = function () {
               if (torpido.physics.overlaps(enemy)) {
                   this.torpidoGroup.members.splice(li, 1)
                   this.enemyGroup.members.splice(ei, 1)
-                  score += 5
+                  if(inputNewBoss) score += 5;
                   this.score.text = getScore()
               }
               //levels                                
               switch(score){
-                case 100:
-                    this.bossGroup.addChild(new boss("boss1"));                          
-                    this.bgGroupe.addChild(new GameObjects.StaticImage(this, this.textures["background2"], 0, 0))                                  
-                    enemyRaid = false;
-                    this.enemyGroup.clear();    
-                    cadence = 24;                
-                break;
-                case 300:
-                    this.bossGroup.addChild(new boss("boss2"));
-                    this.bgGroupe.addChild(new GameObjects.StaticImage(this, this.textures["background3"], 0, 0))                                  
-                    enemyRaid = false;
-                    cadence = 18
-                    this.enemyGroup.clear();                    
+                case 200: 
+                    if(inputNewBoss){
+                      this.bossGroup.addChild(new boss("boss1"));                      
+                      inputNewBoss = false;
+                      cadence = 24;                
+                    }                  
+                    // enemyRaid = false;
+                    // this.enemyGroup.clear();    
                 break;
                 case 500:
+                if(inputNewBoss){
+                    this.bossGroup.addChild(new boss("boss2"));
+                    this.bgGroupe.addChild(new GameObjects.StaticImage(this, this.textures["background2"], 0, 0))                                                                            
+                    inputNewBoss = false;
+                }
+                    // enemyRaid = false;
+                    // this.enemyGroup.clear();                    
+                    cadence = 18
+                break;
+                case 800:
+                  if(inputNewBoss){
                     this.bossGroup.addChild(new boss("boss3"));
-                    this.bgGroupe.addChild(new GameObjects.StaticImage(this, this.textures["background4"], 0, 0))                                  
-                    enemyRaid = false;
+                    this.bgGroupe.addChild(new GameObjects.StaticImage(this, this.textures["background3"], 0, 0))                                  
+                    inputNewBoss = false;
+                  }
+                    // enemyRaid = false;
+                    // this.enemyGroup.clear();                    
                     cadence = 12
-                    this.enemyGroup.clear();                    
                 break;
-                case 700:
+                case 1100:
+                  if(inputNewBoss && score > 2100){
                     this.bossGroup.addChild(new boss("boss4"));
-                    this.bgGroupe.addChild(new GameObjects.StaticImage(this, this.textures["background5"], 0, 0))                                  
-                    enemyRaid = false;
+                    this.bgGroupe.addChild(new GameObjects.StaticImage(this, this.textures["background4"], 0, 0))                                  
+                    inputNewBoss = false;
+                  }
+                    // enemyRaid = false;
+                    // this.enemyGroup.clear();                    
                     cadence = 6
-                    this.enemyGroup.clear();                    
                 break;
-                case 900:
-                    this.bossGroup.addChild(new boss("boss5"));
-                     this.bgGroupe.addChild(new GameObjects.StaticImage(this, this.textures["background6"], 0, 0))                                  
-                    enemyRaid = false;
+                case 1400:
+                    if(inputNewBoss){
+                      this.bossGroup.addChild(new boss("boss5"));
+                      this.bgGroupe.addChild(new GameObjects.StaticImage(this, this.textures["background5"], 0, 0))                                  
+                      inputNewBoss = false
+                    }
+                    // enemyRaid = false;
+                    // this.enemyGroup.clear();                    
                     cadence = 3
-                    this.enemyGroup.clear();                    
                 break;
 
 
@@ -196,12 +210,7 @@ state.update = function () {
 
             if (torpido.physics.overlaps(this.enemyGroup)) torpido.destroy()
           })             
-      }
-      this.bossGroup.members.forEach((boss, ei) => {        
-        if(boss.physics.overlaps(this.spaceship)){
-          life = 0;
-          gameOver = true;
-        }
+      this.bossGroup.members.forEach((boss, ei) => {                
         if(torpido.physics.overlaps(boss)){
           boss.life-=5;
           this.torpidoGroup.members.splice(li,1);
@@ -209,7 +218,8 @@ state.update = function () {
             this.bossGroup.members.splice(ei,1);          
             score+=100;                 
             level++;   
-            enemyRaid = true;
+            bossFighted = true;
+            inputNewBoss = true;
             this.enemyLoop = 0;
             this.score.text = getScore()
             this.level.text = getLevel()
@@ -252,15 +262,19 @@ state.update = function () {
   }
   // move enemy and remove them if they leave the canvas
   this.enemyGroup.members.forEach((enemy, ei) => {
-      if(!gameOver) enemy.transform.x -= 5
+      if(!gameOver) enemy.transform.x -= 10 
       if (enemy.x < -50) this.enemyGroup.members.splice(ei, 1)
   })
   this.bossGroup.members.forEach((boss, ei) => {
       if(!gameOver) boss.transform.x -= 1
+      if(boss.physics.overlaps(this.spaceship)){
+        life = 0;
+        gameOver = true;
+      }
   })
 
   // enemy loop  
-  if (this.enemyLoop === cadence && !gameOver && enemyRaid) {
+  if (this.enemyLoop === cadence && !gameOver) {
       let keyRand = Math.floor(Math.random() * enemyRands.length);
       this.enemyGroup.addChild(new enemy(enemyRands[keyRand]))
       this.enemyLoop = 0
